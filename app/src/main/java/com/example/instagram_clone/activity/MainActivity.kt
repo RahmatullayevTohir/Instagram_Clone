@@ -12,7 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
  * and pager can be controlled by BottomNavigationView
  */
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(),UploadFragment.UploadListener, HomeFragment.HomeListener {
     val TAG = MainActivity::class.java.simpleName
     var index = 0
     lateinit var homeFragment: HomeFragment
@@ -24,6 +24,21 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
+    }
+
+    override fun scrollToUpload() {
+        index =2
+        scrollByIndex(index)
+    }
+
+    override fun scrollToHome(){
+        index =0
+        scrollByIndex(index)
+    }
+
+    private fun scrollByIndex(index:Int){
+        viewPager.currentItem = index
+        bottomNavigationView.menu.getItem(index).isChecked = true
     }
 
     private fun initViews() {

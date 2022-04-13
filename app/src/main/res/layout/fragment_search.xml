@@ -34,15 +34,26 @@
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
-        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:text="Search"
-            android:textSize="40sp"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_margin="16dp"
+            android:hint="Search"
+            android:paddingLeft="10dp"
+            android:background="@drawable/et_rounder_corners"
+            android:paddingRight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
     </LinearLayout>
 
 </LinearLayout>
