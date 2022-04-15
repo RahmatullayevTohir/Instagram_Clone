@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.WindowManager
 import com.example.instagram_clone.R
+import com.example.instagram_clone.manager.AuthManager
 
 /*
 // In SplashActivity, user can visit to SignInActivity or MainActivity
@@ -31,14 +32,12 @@ class SplashActivity : BaseActivity() {
             }
 
             override fun onFinish() {
-                callSignInActivity()
+                if (AuthManager.isSignedIn()){
+                    callMainActivity(this@SplashActivity)
+                }else{
+                    callSignInActivity(this@SplashActivity)
+                }
             }
         }.start()
-    }
-
-    fun callSignInActivity(){
-        val intent = Intent(this, SignInActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 }

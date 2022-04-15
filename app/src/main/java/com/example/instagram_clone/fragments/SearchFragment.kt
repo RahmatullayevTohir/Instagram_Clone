@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.instagram_clone.R
 import com.example.instagram_clone.adapter.SearchAdapter
+import com.example.instagram_clone.manager.DatabaseManager
+import com.example.instagram_clone.manager.handler.DBUsersHandler
 import com.example.instagram_clone.model.User
 
 /**
@@ -69,24 +71,19 @@ class SearchFragment : BaseFragment() {
         refreshAdapter(users)
     }
 
-    private fun loadUsers():ArrayList<User>{
-        items = ArrayList<User>()
-        items.add(User("Tohir","trakhmatullayev@gmail.com"))
-        items.add(User("Sarvar","trakhmatullayev@gmail.com"))
-        items.add(User("Uchqun","trakhmatullayev@gmail.com"))
-        items.add(User("Sherzod","trakhmatullayev@gmail.com"))
-        items.add(User("Abbos","trakhmatullayev@gmail.com"))
-        items.add(User("Aziz","trakhmatullayev@gmail.com"))
-        items.add(User("Nodir","trakhmatullayev@gmail.com"))
-        items.add(User("Javlon","trakhmatullayev@gmail.com"))
-        items.add(User("Tohir","trakhmatullayev@gmail.com"))
-        items.add(User("Muqaddam","trakhmatullayev@gmail.com"))
-        items.add(User("Aziz","trakhmatullayev@gmail.com"))
-        items.add(User("Tohir","1trakhmatullayev@gmail.com"))
-        items.add(User("Abbos","trakhmatullayev@gmail.com"))
-        items.add(User("Tohir","trakhmatullayev@gmail.com"))
-        items.add(User("Ranaldo","trakhmatullayev@gmail.com"))
-        items.add(User("Messi","trakhmatullayev@gmail.com"))
-        return items
+
+    private fun loadUsers(){
+        DatabaseManager.loadUsers(object :DBUsersHandler{
+            override fun onSuccess(users: ArrayList<User>) {
+                items.clear()
+                items.addAll(users)
+                refreshAdapter(items)
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+        })
     }
+
 }

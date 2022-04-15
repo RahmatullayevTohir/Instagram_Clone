@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"/>
 
             <ImageView
-                android:id="@+id/iv_camera"
+                android:id="@+id/iv_logout"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_baseline_exit_to_app_24"
                 android:layout_width="wrap_content"

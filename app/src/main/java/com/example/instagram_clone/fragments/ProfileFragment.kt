@@ -6,12 +6,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.instagram_clone.R
+import com.example.instagram_clone.activity.MainActivity
 import com.example.instagram_clone.adapter.ProfileAdapter
+import com.example.instagram_clone.manager.AuthManager
+import com.example.instagram_clone.manager.DatabaseManager
+import com.example.instagram_clone.manager.StorageManager
+import com.example.instagram_clone.manager.handler.DBUserHandler
+import com.example.instagram_clone.manager.handler.StorageHandler
 import com.example.instagram_clone.model.Post
+import com.example.instagram_clone.model.User
+import com.example.instagram_clone.utils.Extension.toast
 import com.example.instagram_clone.utils.Logger
 import com.google.android.material.imageview.ShapeableImageView
 import com.sangcomz.fishbun.FishBun
@@ -24,6 +36,9 @@ import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 class ProfileFragment : BaseFragment() {
     val TAG = ProfileFragment::class.java.simpleName
     lateinit var rv_profile:RecyclerView
+    lateinit var iv_profile:ShapeableImageView
+    lateinit var tv_fullname:TextView
+    lateinit var tv_email:TextView
 
     var pickedPhoto: Uri? = null
     var allPhoto = ArrayList<Uri>()
@@ -39,13 +54,34 @@ class ProfileFragment : BaseFragment() {
     }
 
     fun initViews(view: View){
+        loadUserInfo()
         rv_profile = view.findViewById(R.id.rv_profile)
         rv_profile.layoutManager = GridLayoutManager(activity,2)
 
-        val iv_profile = view.findViewById<ShapeableImageView>(R.id.iv_profile)
+        tv_fullname = view.findViewById(R.id.tv_fullname)
+        tv_email = view.findViewById(R.id.tv_email)
+        iv_profile = view.findViewById(R.id.iv_profile)
         iv_profile.setOnClickListener { pickFishBunPhoto() }
 
+        val iv_logout = view.findViewById<ImageView>(R.id.iv_logout)
+        iv_logout.setOnClickListener {
+            AuthManager.signOut()
+            callSignInActivity(requireActivity())
+        }
+
+
         refreshAdapter(loadPosts())
+    }
+
+    private fun showUserInfo(user: User){
+        tv_fullname.text = user.fullname
+        tv_email.text = user.email
+        Glide.with(this)
+            .load(user.userImg)
+            .placeholder(R.drawable.im_profile)
+            .error(R.drawable.im_profile)
+            .into(iv_profile)
+
     }
 
     /**
@@ -55,7 +91,7 @@ class ProfileFragment : BaseFragment() {
     private fun pickFishBunPhoto(){
         FishBun.with(this).setImageAdapter(GlideAdapter())
             .setMinCount(1)
-            .setMinCount(1)
+            .setMaxCount(1)
             .setSelectedImages(allPhoto)
             .startAlbumWithActivityResultCallback(photoLauncher)
     }
@@ -63,15 +99,40 @@ class ProfileFragment : BaseFragment() {
     private val photoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode==Activity.RESULT_OK){
             allPhoto = it.data?.getParcelableArrayListExtra(FishBun.INTENT_PATH)?: arrayListOf()
-            pickedPhoto = allPhoto.get(0)
-            uploadPickedPhoto()
+            pickedPhoto = allPhoto[0]
+            uploadUserPhoto()
         }
     }
 
-    private fun uploadPickedPhoto(){
-        if (pickedPhoto!= null){
-            Logger.d(TAG, pickedPhoto!!.path.toString())
-        }
+    private fun loadUserInfo(){
+        DatabaseManager.loadUser(AuthManager.currentUser()!!.uid, object :DBUserHandler{
+            override fun onSuccess(user: User?) {
+                if (user!=null){
+                    showUserInfo(user)
+                }
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+        })
+    }
+
+
+
+    private fun uploadUserPhoto(){
+        if (pickedPhoto == null) return
+        StorageManager.uploadUserPhoto(pickedPhoto!!, object :StorageHandler{
+            override fun onSuccess(imgUrl: String) {
+                DatabaseManager.updateUserImage(imgUrl)
+                (requireActivity() as MainActivity).toast(pickedPhoto.toString())
+                iv_profile.setImageURI(pickedPhoto)
+            }
+
+            override fun onError(exception: Exception) {
+
+            }
+        })
     }
 
     private fun refreshAdapter(items:ArrayList<Post>){
