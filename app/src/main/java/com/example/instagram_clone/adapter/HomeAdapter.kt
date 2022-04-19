@@ -29,8 +29,26 @@ class HomeAdapter(var fragment: HomeFragment,var items:ArrayList<Post>):BaseAdap
         val post: Post = items[position]
         if (holder is PostViewHolder){
             var iv_post = holder.iv_post
+            val tv_fullname = holder.tv_fullname
+            val iv_profile = holder.iv_profile
+            val tv_caption = holder.tv_caption
+            val tv_time = holder.tv_time
 
-            Glide.with(fragment).load(post.image).into(iv_post)
+            tv_fullname.text = post.fullname
+            tv_caption.text = post.caption
+            tv_time.text = post.currentDate
+
+            Glide
+                .with(fragment)
+                .load(post.userImg)
+                .placeholder(R.drawable.im_profile)
+                .error(R.drawable.im_profile)
+                .into(iv_profile)
+
+            Glide
+                .with(fragment)
+                .load(post.postImg)
+                .into(iv_post)
         }
     }
 

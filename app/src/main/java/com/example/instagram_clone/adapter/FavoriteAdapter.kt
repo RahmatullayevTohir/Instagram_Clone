@@ -31,7 +31,7 @@ class FavoriteAdapter(var fragment: FavoriteFragment, var items:ArrayList<Post>)
         if (holder is PostViewHolder){
             var iv_post = holder.iv_post
 
-            Glide.with(fragment).load(post.image).into(iv_post)
+            Glide.with(fragment).load(post.postImg).into(iv_post)
         }
     }
 

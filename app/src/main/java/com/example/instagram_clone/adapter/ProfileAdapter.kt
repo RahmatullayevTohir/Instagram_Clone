@@ -29,7 +29,7 @@ class ProfileAdapter(var fragment: ProfileFragment, var items:ArrayList<Post>):B
             var iv_post = holder.iv_post
             setViewHeight(iv_post)
 
-            Glide.with(fragment).load(post.image).into(iv_post)
+            Glide.with(fragment).load(post.postImg).into(iv_post)
         }
     }
 
@@ -50,7 +50,7 @@ class ProfileAdapter(var fragment: ProfileFragment, var items:ArrayList<Post>):B
 
     private fun setViewHeight(view: View){
         val params:ViewGroup.LayoutParams = view.getLayoutParams()
-        params.height = Utils.screenSize(fragment.requireActivity().application).width/2
+        params.height = Utils.screenSize(fragment.requireActivity().application).width/3
         view.setLayoutParams(params)
     }
 }

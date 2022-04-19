@@ -19,7 +19,9 @@ import com.example.instagram_clone.adapter.ProfileAdapter
 import com.example.instagram_clone.manager.AuthManager
 import com.example.instagram_clone.manager.DatabaseManager
 import com.example.instagram_clone.manager.StorageManager
+import com.example.instagram_clone.manager.handler.DBPostsHandler
 import com.example.instagram_clone.manager.handler.DBUserHandler
+import com.example.instagram_clone.manager.handler.DBUsersHandler
 import com.example.instagram_clone.manager.handler.StorageHandler
 import com.example.instagram_clone.model.Post
 import com.example.instagram_clone.model.User
@@ -39,6 +41,9 @@ class ProfileFragment : BaseFragment() {
     lateinit var iv_profile:ShapeableImageView
     lateinit var tv_fullname:TextView
     lateinit var tv_email:TextView
+    lateinit var tv_posts:TextView
+    lateinit var tv_followers:TextView
+    lateinit var tv_following:TextView
 
     var pickedPhoto: Uri? = null
     var allPhoto = ArrayList<Uri>()
@@ -54,10 +59,13 @@ class ProfileFragment : BaseFragment() {
     }
 
     fun initViews(view: View){
-        loadUserInfo()
-        rv_profile = view.findViewById(R.id.rv_profile)
-        rv_profile.layoutManager = GridLayoutManager(activity,2)
 
+        rv_profile = view.findViewById(R.id.rv_profile)
+        rv_profile.layoutManager = GridLayoutManager(activity,3)
+
+        tv_followers = view.findViewById(R.id.tv_followers)
+        tv_following = view.findViewById(R.id.tv_following)
+        tv_posts = view.findViewById(R.id.tv_posts)
         tv_fullname = view.findViewById(R.id.tv_fullname)
         tv_email = view.findViewById(R.id.tv_email)
         iv_profile = view.findViewById(R.id.iv_profile)
@@ -71,6 +79,50 @@ class ProfileFragment : BaseFragment() {
 
 
         refreshAdapter(loadPosts())
+        loadUserInfo()
+        loadMyPosts()
+        loadMyFollowing()
+        loadMyFollowers()
+    }
+
+    private fun loadMyFollowing(){
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadFollowing(uid, object :DBUsersHandler{
+            override fun onSuccess(users: ArrayList<User>) {
+                tv_following.text = users.size.toString()
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+        })
+    }
+
+    private fun loadMyFollowers(){
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadFollowers(uid, object :DBUsersHandler{
+            override fun onSuccess(users: ArrayList<User>) {
+                tv_followers.text = users.size.toString()
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+        })
+    }
+
+    private fun loadMyPosts(){
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadPosts(uid,object :DBPostsHandler{
+            override fun onSuccess(posts: ArrayList<Post>) {
+                tv_posts.text = posts.size.toString()
+                refreshAdapter(posts)
+            }
+
+            override fun onError(e: Exception) {
+                dismissLoading()
+            }
+        })
     }
 
     private fun showUserInfo(user: User){
@@ -103,6 +155,7 @@ class ProfileFragment : BaseFragment() {
             uploadUserPhoto()
         }
     }
+
 
     private fun loadUserInfo(){
         DatabaseManager.loadUser(AuthManager.currentUser()!!.uid, object :DBUserHandler{
@@ -142,14 +195,6 @@ class ProfileFragment : BaseFragment() {
 
     private fun loadPosts():ArrayList<Post> {
         val items = ArrayList<Post>()
-        items.add(Post("https://images.unsplash.com/photo-1500621137413-1a61d6ac1d44?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1612596551578-9c81c9de1b3f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1597589827317-4c6d6e0a90bd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"))
-
-        items.add(Post("https://images.unsplash.com/photo-1500621137413-1a61d6ac1d44?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1612596551578-9c81c9de1b3f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1597589827317-4c6d6e0a90bd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80"))
-
         return items
     }
 }

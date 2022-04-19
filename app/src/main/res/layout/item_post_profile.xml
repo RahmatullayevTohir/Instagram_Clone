@@ -26,7 +26,7 @@
             android:id="@+id/tv_caption"
             android:lines="2"
             android:textSize="14sp"
-            android:text="Islomga bagʻishlangan umr. Hujjatli film 2-qism Islomga bagʻishlangan umr. Hujjatli film 2-qism"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>

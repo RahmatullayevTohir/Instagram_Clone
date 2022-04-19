@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.instagram_clone.R
 import com.example.instagram_clone.fragments.SearchFragment
 import com.example.instagram_clone.model.User
@@ -27,7 +28,30 @@ class SearchAdapter(var fragment: SearchFragment,var items:ArrayList<User>):Base
         if (holder is UserViewHolder){
             holder.tv_fullname.text = user.fullname
             holder.tv_email.text = user.email
+
+            Glide.with(fragment).load(user.userImg)
+                .placeholder(R.drawable.im_profile)
+                .error(R.drawable.im_profile)
+                .into(holder.iv_profile)
+
+            var tv_follow = holder.tv_follow
+            tv_follow.setOnClickListener {
+                if (!user.isFollowed){
+                    tv_follow.text = fragment.getString(R.string.str_following)
+                }else{
+                    tv_follow.text = fragment.getString(R.string.str_follow)
+                }
+                fragment.followOrUnfollow(user)
+            }
+
+            if (!user.isFollowed){
+                tv_follow.text = fragment.getString(R.string.str_follow)
+            }else{
+                tv_follow.text = fragment.getString(R.string.str_following)
+            }
         }
+
+
     }
 
     class UserViewHolder(var view:View):RecyclerView.ViewHolder(view){

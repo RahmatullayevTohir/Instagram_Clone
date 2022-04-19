@@ -85,7 +85,7 @@
             <TextView
                 android:id="@+id/tv_fullname"
                 android:layout_marginTop="10dp"
-                android:text="Rahmatullayev Tohir"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -94,7 +94,7 @@
 
             <TextView
                 android:id="@+id/tv_email"
-                android:text="trakhmatullayev@gmail.com"
+                android:text=""
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
@@ -112,7 +112,8 @@
                     android:gravity="center"
                     android:layout_height="match_parent">
                     <TextView
-                        android:text="625"
+                        android:id="@+id/tv_posts"
+                        android:text="0"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -132,7 +133,8 @@
                     android:gravity="center"
                     android:layout_height="match_parent">
                     <TextView
-                        android:text="6,425"
+                        android:id="@+id/tv_followers"
+                        android:text="0"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -152,7 +154,8 @@
                     android:gravity="center"
                     android:layout_height="match_parent">
                     <TextView
-                        android:text="125"
+                        android:id="@+id/tv_following"
+                        android:text="0"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"

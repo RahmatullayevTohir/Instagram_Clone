@@ -23,7 +23,8 @@
             android:theme="@style/SignInActivityTheme"/>
         <activity
             android:name=".activity.MainActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".activity.BaseActivity"
             android:exported="false" />
