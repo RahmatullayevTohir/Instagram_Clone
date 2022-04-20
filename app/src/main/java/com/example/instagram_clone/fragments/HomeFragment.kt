@@ -14,8 +14,11 @@ import com.example.instagram_clone.R
 import com.example.instagram_clone.adapter.HomeAdapter
 import com.example.instagram_clone.manager.AuthManager
 import com.example.instagram_clone.manager.DatabaseManager
+import com.example.instagram_clone.manager.handler.DBPostHandler
 import com.example.instagram_clone.manager.handler.DBPostsHandler
 import com.example.instagram_clone.model.Post
+import com.example.instagram_clone.utils.DialogListener
+import com.example.instagram_clone.utils.Utils
 import java.lang.RuntimeException
 
 class HomeFragment : BaseFragment() {
@@ -90,6 +93,33 @@ class HomeFragment : BaseFragment() {
         })
     }
 
+    fun likeOrUnLikePost(post: Post){
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.likeFeedPost(uid, post)
+    }
+
+    fun showDeleteDialog(post: Post){
+        Utils.dialogDouble(requireContext(), getString(R.string.str_delete_post), object :
+            DialogListener {
+            override fun onCallback(isChosen: Boolean) {
+                if(isChosen){
+                    deletePost(post)
+                }
+            }
+        })
+    }
+
+    fun deletePost(post: Post) {
+        DatabaseManager.deletePost(post, object : DBPostHandler {
+            override fun onSuccess(post: Post) {
+                loadMyFeeds()
+            }
+
+            override fun onError(e: java.lang.Exception) {
+
+            }
+        })
+    }
 
 
     interface HomeListener{

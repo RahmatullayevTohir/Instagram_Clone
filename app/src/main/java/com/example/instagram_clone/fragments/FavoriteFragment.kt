@@ -10,7 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.instagram_clone.R
 import com.example.instagram_clone.adapter.FavoriteAdapter
 import com.example.instagram_clone.adapter.HomeAdapter
+import com.example.instagram_clone.manager.AuthManager
+import com.example.instagram_clone.manager.DatabaseManager
+import com.example.instagram_clone.manager.DatabaseManager.deletePost
+import com.example.instagram_clone.manager.handler.DBPostHandler
+import com.example.instagram_clone.manager.handler.DBPostsHandler
 import com.example.instagram_clone.model.Post
+import com.example.instagram_clone.utils.DialogListener
+import com.example.instagram_clone.utils.Utils
 
 class FavoriteFragment : BaseFragment() {
     val TAG =FavoriteFragment::class.java.simpleName
@@ -30,16 +37,64 @@ class FavoriteFragment : BaseFragment() {
         recyclerView = view.findViewById(R.id.recylerView_favorite)
         recyclerView.layoutManager = GridLayoutManager(activity,1)
 
-        refreshAdapter(loadPosts())
+        loadLikeFeeds()
     }
+
+    fun likeOrUnLikePost(post: Post){
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.likeFeedPost(uid,post)
+
+        loadLikeFeeds()
+    }
+
+    fun loadLikeFeeds(){
+        showLoading(requireActivity())
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadLikeFeeds(uid, object :DBPostsHandler{
+            override fun onSuccess(posts: ArrayList<Post>) {
+                dismissLoading()
+                refreshAdapter(posts)
+            }
+
+            override fun onError(e: Exception) {
+                dismissLoading()
+            }
+        })
+    }
+
+    fun showDeleteDialog(post: Post){
+        Utils.dialogDouble(requireContext(), getString(R.string.str_delete_post), object :
+            DialogListener {
+            override fun onCallback(isChosen: Boolean) {
+                if(isChosen){
+                    deletePost(post)
+                }
+            }
+        })
+    }
+
 
     private fun refreshAdapter(items:ArrayList<Post>){
         val adapter = FavoriteAdapter(this,items)
         recyclerView.adapter = adapter
     }
 
+
+
     private fun loadPosts():ArrayList<Post>{
         val items = ArrayList<Post>()
         return items
+    }
+
+    fun deletePost(post: Post) {
+        DatabaseManager.deletePost(post, object : DBPostHandler {
+            override fun onSuccess(post: Post) {
+                loadLikeFeeds()
+            }
+
+            override fun onError(e: java.lang.Exception) {
+
+            }
+        })
     }
 }

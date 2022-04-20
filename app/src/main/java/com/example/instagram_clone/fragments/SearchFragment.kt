@@ -18,6 +18,7 @@ import com.example.instagram_clone.manager.handler.DBFollowHandler
 import com.example.instagram_clone.manager.handler.DBUserHandler
 import com.example.instagram_clone.manager.handler.DBUsersHandler
 import com.example.instagram_clone.model.User
+import com.example.instagram_clone.utils.Utils
 
 /**
  * In SearchFragment, all registered users can be found by searching keyword and followed
@@ -56,7 +57,6 @@ class SearchFragment : BaseFragment() {
         })
 
         loadUsers()
-        refreshAdapter(items)
     }
 
     private fun refreshAdapter(items:ArrayList<User>){
@@ -129,9 +129,10 @@ class SearchFragment : BaseFragment() {
         DatabaseManager.loadUser(uid, object :DBUserHandler{
             override fun onSuccess(me: User?) {
                 DatabaseManager.followUser(me!!, to,object :DBFollowHandler{
-                    override fun onSuccess(isDone: Boolean) {
+                    override fun onSuccess(isFollowed: Boolean) {
                         to.isFollowed = true
                         DatabaseManager.storePostsToMyFeed(uid, to)
+                        Utils.sendNote(requireContext(),me, to.device_token)
                     }
 
                     override fun onError(e: Exception) {

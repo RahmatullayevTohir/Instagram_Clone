@@ -73,7 +73,7 @@ object DatabaseManager {
                 user.uid = uid
                 handler.onSuccess(user)
             }else{
-                handler.onSuccess(null)
+                handler.onSuccess()
             }
         }.addOnFailureListener {
             handler.onError(it)
@@ -126,8 +126,10 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val email = document.getString("email")
                     val userImg = document.getString("userImg")
+                    val device_token = document.getString("device_token")
                     val user = User(fullname!!, email!!, userImg!!)
                     user.uid = uid!!
+                    user.device_token = device_token!!
                     users.add(user)
                 }
                 handler.onSuccess(users)
@@ -146,8 +148,10 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val email = document.getString("email")
                     val userImg = document.getString("userImg")
+                    val device_token = document.getString("device_token")
                     val user = User(fullname!!, email!!, userImg!!)
                     user.uid = uid!!
+                    user.device_token = device_token!!
                     users.add(user)
                 }
                 handler.onSuccess(users)
@@ -225,7 +229,7 @@ object DatabaseManager {
     }
 
     fun loadFeeds(uid: String, handler: DBPostsHandler){
-        val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH).orderBy("currentDate")
+        val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH)
         reference.get().addOnCompleteListener {
             val posts = ArrayList<Post>()
             if (it.isSuccessful){
@@ -235,17 +239,80 @@ object DatabaseManager {
                     val postImg = document.getString("postImg")
                     val fullname = document.getString("fullname")
                     val userImg = document.getString("userImg")
+                    val currentDate = document.getString("currentDate")
+                    var isLiked = document.getBoolean("isLiked")
+                    if (isLiked == null) isLiked = false
+                    val userId = document.getString("uid")
 
                     val post = Post(id!!, caption!!, postImg!!)
                     post.uid = uid
                     post.fullname = fullname!!
                     post.userImg = userImg!!
+                    post.currentDate = currentDate!!
+                    post.isLiked = isLiked
                     posts.add(post)
                 }
                 handler.onSuccess(posts)
             }else{
                 handler.onError(it.exception!!)
             }
+        }
+    }
+
+    fun loadLikeFeeds(uid: String, handler: DBPostsHandler){
+        val reference = database.collection(USER_PATH).document(uid).collection(FEED_PATH)
+            .whereEqualTo("isLiked", true)
+        reference.get().addOnCompleteListener {
+            val posts = ArrayList<Post>()
+            if (it.isSuccessful){
+                for (document in it.result!!){
+                    val id = document.getString("id")
+                    val caption = document.getString("caption")
+                    val postImg = document.getString("postImg")
+                    val fullname = document.getString("fullname")
+                    val userImg = document.getString("userImg")
+                    val currentDate = document.getString("currentDate")
+                    var isLiked = document.getBoolean("isLiked")
+                    if (isLiked == null) isLiked = false
+                    val userId = document.getString("uid")
+
+                    val post = Post(id!!, caption!!, postImg!!)
+                    post.uid = uid
+                    post.fullname = fullname!!
+                    post.userImg = userImg!!
+                    post.currentDate = currentDate!!
+                    post.isLiked = isLiked
+                    posts.add(post)
+                }
+                handler.onSuccess(posts)
+            }else{
+                handler.onError(it.exception!!)
+            }
+        }
+    }
+
+    fun likeFeedPost(uid:String, post: Post){
+        database.collection(USER_PATH).document(uid).collection(FEED_PATH).document(post.id)
+            .update("isLiked", post.isLiked)
+        if (uid == post.uid){
+            database.collection(USER_PATH).document(uid).collection(POST_PATH).document(post.id)
+                .update("isLiked", post.isLiked)
+        }
+    }
+
+    fun deletePost(post: Post, handler: DBPostHandler) {
+        val reference1 = database.collection(USER_PATH).document(post.uid).collection(POST_PATH)
+        reference1.document(post.id).delete().addOnSuccessListener {
+
+            val reference2 = database.collection(USER_PATH).document(post.uid).collection(FEED_PATH)
+            reference2.document(post.id).delete().addOnSuccessListener {
+                handler.onSuccess(post)
+            }.addOnFailureListener {
+                handler.onError(it)
+            }
+
+        }.addOnFailureListener {
+            handler.onError(it)
         }
     }
 }
