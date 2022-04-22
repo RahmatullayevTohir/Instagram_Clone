@@ -15,6 +15,7 @@
             android:id="@+id/iv_profile"
             android:padding="2dp"
             android:src="@drawable/im_profile"
+            android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/circle"
             app:strokeColor="@color/app_color_2"
             app:strokeWidth="2dp"

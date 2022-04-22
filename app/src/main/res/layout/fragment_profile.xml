@@ -62,6 +62,7 @@
                     android:id="@+id/iv_profile"
                     android:padding="2dp"
                     android:src="@drawable/im_profile"
+                    android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/circle"
                     android:layout_width="match_parent"
                     app:strokeWidth="2dp"

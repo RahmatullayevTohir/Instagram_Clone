@@ -68,9 +68,11 @@ object DatabaseManager {
                 val fullname:String? = it.getString("fullname")
                 val email:String? = it.getString("email")
                 val userImg:String? = it.getString("userImg")
+                val device_token = it.getString("device_token")
 
                 val user =User(fullname!!, email!!, userImg!!)
                 user.uid = uid
+                user.device_token = device_token!!
                 handler.onSuccess(user)
             }else{
                 handler.onSuccess()
@@ -170,7 +172,10 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val email = document.getString("email")
                     val userImg = document.getString("userImg")
+                    val device_token = document.getString("device_token")
+
                     val user = User(fullname!!, email!!, userImg!!)
+                    user.device_token = device_token!!
                     user.uid = uid!!
                     users.add(user)
                 }
@@ -214,9 +219,11 @@ object DatabaseManager {
                     val postImg = document.getString("postImg")
                     val fullname = document.getString("fullname")
                     val userImg = document.getString("userImg")
+                    val device_token = document.getString("device_token")
 
                     val post = Post(id!!, caption!!, postImg!!)
                     post.uid = uid
+                    post.device_token = device_token!!
                     post.fullname = fullname!!
                     post.userImg = userImg!!
                     posts.add(post)
@@ -240,6 +247,7 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val userImg = document.getString("userImg")
                     val currentDate = document.getString("currentDate")
+                    val device_token = document.getString("device_token")
                     var isLiked = document.getBoolean("isLiked")
                     if (isLiked == null) isLiked = false
                     val userId = document.getString("uid")
@@ -248,6 +256,7 @@ object DatabaseManager {
                     post.uid = uid
                     post.fullname = fullname!!
                     post.userImg = userImg!!
+                    post.device_token = device_token!!
                     post.currentDate = currentDate!!
                     post.isLiked = isLiked
                     posts.add(post)
@@ -272,6 +281,7 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val userImg = document.getString("userImg")
                     val currentDate = document.getString("currentDate")
+                    val device_token = document.getString("device_token")
                     var isLiked = document.getBoolean("isLiked")
                     if (isLiked == null) isLiked = false
                     val userId = document.getString("uid")
@@ -280,6 +290,7 @@ object DatabaseManager {
                     post.uid = uid
                     post.fullname = fullname!!
                     post.userImg = userImg!!
+                    post.device_token = device_token!!
                     post.currentDate = currentDate!!
                     post.isLiked = isLiked
                     posts.add(post)

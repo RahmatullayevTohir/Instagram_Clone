@@ -100,6 +100,7 @@ class UploadFragment : BaseFragment() {
             .setMaxCount(1)
             .setMinCount(1)
             .setSelectedImages(allPhoto)
+            .hasCameraInPickerPage(true)
             .startAlbumWithActivityResultCallback(photoLauncher)
 
     }
@@ -133,6 +134,7 @@ class UploadFragment : BaseFragment() {
                         post.uid = uid
                         post.fullname = user!!.fullname
                         post.userImg = user.userImg
+                        post.device_token = user.device_token
                         storePostToDB(post)
                     }
 
